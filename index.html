@@ -5,24 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BotWatch - Surveillez vos bots Discord</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #5865F2;
+            --primary-light: #7983f5;
             --secondary: #424549;
             --dark: #36393f;
             --darker: #2f3136;
             --darkest: #202225;
             --light: #f6f6f7;
+            --lighter: #ffffff;
             --accent: #3ba55d;
             --error: #ed4245;
-            --transition: all 0.3s ease;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1);
+            --card-hover: 0 14px 28px rgba(0, 0, 0, 0.15), 0 10px 10px rgba(0, 0, 0, 0.12);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
@@ -41,13 +46,19 @@
 
         /* Header */
         header {
-            background-color: var(--darker);
+            background-color: rgba(47, 49, 54, 0.8);
+            backdrop-filter: blur(10px);
             padding: 20px 0;
             position: fixed;
             width: 100%;
             top: 0;
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        header.scrolled {
+            padding: 15px 0;
         }
 
         nav {
@@ -59,18 +70,25 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             font-weight: 700;
             font-size: 1.5rem;
+            color: var(--lighter);
         }
 
-        .logo i {
-            color: var(--primary);
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .nav-links {
             display: flex;
-            gap: 30px;
+            gap: 32px;
         }
 
         .nav-links a {
@@ -79,10 +97,11 @@
             font-weight: 500;
             transition: var(--transition);
             position: relative;
+            font-size: 0.95rem;
         }
 
         .nav-links a:hover {
-            color: var(--primary);
+            color: var(--lighter);
         }
 
         .nav-links a::after {
@@ -92,7 +111,7 @@
             height: 2px;
             bottom: -5px;
             left: 0;
-            background-color: var(--primary);
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
             transition: var(--transition);
         }
 
@@ -101,36 +120,60 @@
         }
 
         .btn {
-            background-color: var(--primary);
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
             color: white;
-            padding: 10px 20px;
-            border-radius: 4px;
+            padding: 12px 24px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
             transition: var(--transition);
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(88, 101, 242, 0.2);
+            border: none;
+            cursor: pointer;
         }
 
         .btn:hover {
-            background-color: #4752c4;
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 12px rgba(88, 101, 242, 0.3);
         }
 
         /* Hero Section */
         .hero {
-            padding: 160px 0 100px;
+            padding: 180px 0 120px;
             text-align: center;
             background: linear-gradient(to bottom, var(--darkest), var(--darker));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(88, 101, 242, 0.1) 0%, transparent 70%);
+            animation: pulse 15s infinite linear;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
         }
 
         .hero h1 {
             font-size: 3.5rem;
             margin-bottom: 20px;
-            background: linear-gradient(to right, var(--primary), #8ea1e1);
+            background: linear-gradient(to right, var(--lighter), var(--primary-light));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: fadeIn 1s ease;
+            animation: fadeInUp 0.8s ease;
+            font-weight: 700;
+            line-height: 1.2;
         }
 
         .hero p {
@@ -138,40 +181,46 @@
             max-width: 700px;
             margin: 0 auto 40px;
             color: #b9bbbe;
-            animation: fadeIn 1.2s ease;
+            animation: fadeInUp 1s ease;
         }
 
         .hero-buttons {
             display: flex;
             gap: 20px;
             justify-content: center;
-            animation: fadeIn 1.4s ease;
+            animation: fadeInUp 1.2s ease;
         }
 
         .btn-secondary {
-            background-color: transparent;
+            background: transparent;
             border: 2px solid var(--primary);
             color: var(--primary);
+            box-shadow: none;
         }
 
         .btn-secondary:hover {
-            background-color: rgba(88, 101, 242, 0.1);
+            background: rgba(88, 101, 242, 0.1);
+            transform: translateY(-2px);
         }
 
         /* Features */
         .features {
             padding: 100px 0;
             background-color: var(--dark);
+            position: relative;
         }
 
         .section-title {
             text-align: center;
             margin-bottom: 60px;
             font-size: 2.5rem;
+            font-weight: 700;
         }
 
         .section-title span {
-            color: var(--primary);
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .features-grid {
@@ -182,32 +231,61 @@
 
         .feature-card {
             background-color: var(--darker);
-            padding: 30px;
-            border-radius: 10px;
+            padding: 40px 30px;
+            border-radius: 16px;
             transition: var(--transition);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: var(--transition);
         }
 
         .feature-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--card-hover);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
         }
 
         .feature-icon {
             font-size: 2.5rem;
-            color: var(--primary);
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 20px;
+            display: inline-block;
         }
 
         .feature-card h3 {
             font-size: 1.5rem;
             margin-bottom: 15px;
+            color: var(--lighter);
+        }
+
+        .feature-card p {
+            color: #b9bbbe;
         }
 
         /* Bot Info */
         .bot-info {
             padding: 100px 0;
             background-color: var(--darker);
+            position: relative;
         }
 
         .info-container {
@@ -218,14 +296,16 @@
         }
 
         .bot-image {
-            border-radius: 10px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--card-shadow);
             transition: var(--transition);
+            position: relative;
         }
 
         .bot-image:hover {
             transform: scale(1.02);
+            box-shadow: var(--card-hover);
         }
 
         .bot-image img {
@@ -243,9 +323,16 @@
 
         .stat-card {
             background-color: var(--dark);
-            padding: 20px;
-            border-radius: 8px;
+            padding: 24px;
+            border-radius: 12px;
             text-align: center;
+            transition: var(--transition);
+            box-shadow: var(--card-shadow);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-hover);
         }
 
         .stat-value {
@@ -262,22 +349,46 @@
             color: var(--error);
         }
 
+        .stat-label {
+            color: #b9bbbe;
+            font-size: 0.9rem;
+        }
+
         /* CTA */
         .cta {
-            padding: 80px 0;
+            padding: 100px 0;
             text-align: center;
-            background: linear-gradient(to right, var(--dark), var(--darker));
+            background: linear-gradient(45deg, var(--dark), var(--darker));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%235865f2' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 2;
         }
 
         .cta h2 {
             font-size: 2.5rem;
             margin-bottom: 30px;
+            font-weight: 700;
         }
 
         /* Footer */
         footer {
             background-color: var(--darkest);
-            padding: 50px 0 20px;
+            padding: 80px 0 30px;
         }
 
         .footer-content {
@@ -292,6 +403,7 @@
             margin-bottom: 20px;
             position: relative;
             padding-bottom: 10px;
+            color: var(--lighter);
         }
 
         .footer-column h3::after {
@@ -301,7 +413,7 @@
             bottom: 0;
             width: 40px;
             height: 2px;
-            background-color: var(--primary);
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
         }
 
         .footer-column ul {
@@ -319,22 +431,22 @@
         }
 
         .footer-column a:hover {
-            color: var(--primary);
+            color: var(--primary-light);
         }
 
         .copyright {
             text-align: center;
-            padding-top: 20px;
+            padding-top: 30px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             color: #b9bbbe;
             font-size: 0.9rem;
         }
 
         /* Animations */
-        @keyframes fadeIn {
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
@@ -342,9 +454,21 @@
             }
         }
 
+        @keyframes pulse {
+            0% {
+                transform: rotate(0deg) scale(1);
+            }
+            50% {
+                transform: rotate(180deg) scale(1.1);
+            }
+            100% {
+                transform: rotate(360deg) scale(1);
+            }
+        }
+
         .animated {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(30px);
             transition: opacity 0.8s ease, transform 0.8s ease;
         }
 
@@ -354,13 +478,14 @@
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
+        @media (max-width: 968px) {
             .hero h1 {
-                font-size: 2.5rem;
+                font-size: 2.8rem;
             }
             
             .info-container {
                 grid-template-columns: 1fr;
+                gap: 40px;
             }
             
             .hero-buttons {
@@ -371,16 +496,88 @@
             .nav-links {
                 display: none;
             }
+            
+            .bot-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .feature-card {
+                padding: 30px 20px;
+            }
+        }
+
+        /* Hamburger menu for mobile */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 30px;
+            height: 25px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 10;
+        }
+
+        .menu-toggle span {
+            width: 100%;
+            height: 3px;
+            background: var(--light);
+            border-radius: 5px;
+            transition: var(--transition);
+            position: relative;
+            transform-origin: center;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: flex;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                width: 70%;
+                background: var(--darker);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: var(--transition);
+                box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            }
+            
+            .nav-links.active {
+                right: 0;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Header -->
-    <header>
+    <header id="header">
         <div class="container">
             <nav>
                 <div class="logo">
-                    <i class="fas fa-robot"></i>
+                    <div class="logo-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
                     <span>BotWatch</span>
                 </div>
                 <div class="nav-links">
@@ -388,19 +585,24 @@
                     <a href="#stats">Statistiques</a>
                     <a href="#about">À propos</a>
                 </div>
-                <a href="https://discord.com/oauth2/authorize?client_id=1409874341369221170&permissions=8&integration_type=0&scope=bot" class="btn">Inviter le bot</a>
+                <a href="https://discord.com/oauth2/authorize?client_id=1409874341369221170&permissions=8&integration_type=0&scope=bot" class="btn"><i class="fas fa-plus"></i> Inviter le bot</a>
+                <button class="menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </nav>
         </div>
     </header>
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="container">
+        <div class="container hero-content">
             <h1>Surveillez vos bots Discord en temps réel</h1>
             <p>BotWatch vous permet de suivre l'activité, la disponibilité et les performances de tous vos bots Discord en un seul endroit.</p>
             <div class="hero-buttons">
-                <a href="https://discord.com/oauth2/authorize?client_id=1409874341369221170&permissions=8&integration_type=0&scope=bot" class="btn">Commencer maintenant</a>
-                <a href="#features" class="btn btn-secondary">En savoir plus</a>
+                <a href="https://discord.com/oauth2/authorize?client_id=1409874341369221170&permissions=8&integration_type=0&scope=bot" class="btn"><i class="fas fa-bolt"></i> Commencer maintenant</a>
+                <a href="#features" class="btn btn-secondary"><i class="fas fa-arrow-down"></i> En savoir plus</a>
             </div>
         </div>
     </section>
@@ -421,7 +623,7 @@
                     <div class="feature-icon">
                         <i class="fas fa-bell"></i>
                     </div>
-                    <h3>Notifications</h3>
+                    <h3>Notifications intelligentes</h3>
                     <p>Recevez des notifications lorsque vos bots se déconnectent ou rencontrent des problèmes.</p>
                 </div>
                 <div class="feature-card animated">
@@ -467,7 +669,7 @@
                     <p class="animated">Rejoint le: samedi 12 juillet 2025 21:48</p>
                     <p class="animated">Suivi depuis: il y a une heure</p>
                     <div class="animated" style="margin-top: 20px;">
-                        <a href="https://discord.com/oauth2/authorize?client_id=1409874341369221170&permissions=8&integration_type=0&scope=bot" class="btn">Inviter le bot</a>
+                        <a href="https://discord.com/oauth2/authorize?client_id=1409874341369221170&permissions=8&integration_type=0&scope=bot" class="btn"><i class="fas fa-robot"></i> Inviter le bot</a>
                     </div>
                 </div>
             </div>
@@ -476,9 +678,9 @@
 
     <!-- CTA Section -->
     <section class="cta">
-        <div class="container">
+        <div class="container cta-content">
             <h2>Prêt à surveiller vos bots Discord ?</h2>
-            <a href="https://discord.com/oauth2/authorize?client_id=1409874341369221170&permissions=8&integration_type=0&scope=bot" class="btn">Inviter BotWatch dès maintenant</a>
+            <a href="https://discord.com/oauth2/authorize?client_id=1409874341369221170&permissions=8&integration_type=0&scope=bot" class="btn"><i class="fas fa-rocket"></i> Inviter BotWatch dès maintenant</a>
         </div>
     </section>
 
@@ -517,6 +719,7 @@
         // Animation au défilement
         document.addEventListener('DOMContentLoaded', function() {
             const animatedElements = document.querySelectorAll('.animated');
+            const header = document.getElementById('header');
             
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -530,6 +733,24 @@
             
             animatedElements.forEach(element => {
                 observer.observe(element);
+            });
+
+            // Header scroll effect
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
+            // Mobile menu toggle
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            menuToggle.addEventListener('click', function() {
+                navLinks.classList.toggle('active');
+                menuToggle.classList.toggle('active');
             });
         });
     </script>
